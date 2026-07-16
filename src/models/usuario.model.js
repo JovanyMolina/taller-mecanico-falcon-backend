@@ -24,4 +24,35 @@ async function crear({ nombre, email, passwordHash, rol }) {
   return buscarPorId(result.insertId);
 }
 
-module.exports = { buscarPorEmail, buscarPorId, crear };
+async function listar(busqueda) {
+  if (busqueda) {
+    const like = `%${busqueda}%`;
+    const [rows] = await pool.query(
+      `SELECT id, nombre, email, rol, activo FROM usuarios
+       WHERE nombre LIKE ? OR email LIKE ?
+       ORDER BY nombre`,
+      [like, like]
+    );
+    return rows;
+  }
+
+  const [rows] = await pool.query(
+    'SELECT id, nombre, email, rol, activo FROM usuarios ORDER BY nombre'
+  );
+  return rows;
+}
+
+async function actualizar(id, { nombre, email, rol }) {
+  await pool.query(
+    'UPDATE usuarios SET nombre = ?, email = ?, rol = ? WHERE id = ?',
+    [nombre, email, rol, id]
+  );
+  return buscarPorId(id);
+}
+
+async function cambiarEstado(id, activo) {
+  await pool.query('UPDATE usuarios SET activo = ? WHERE id = ?', [activo, id]);
+  return buscarPorId(id);
+}
+
+module.exports = { buscarPorEmail, buscarPorId, crear, listar, actualizar, cambiarEstado };
