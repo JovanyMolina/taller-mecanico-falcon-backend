@@ -25,10 +25,23 @@ const actualizar = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: moto });
 });
 
-// PATCH /api/motocicletas/:id/estado
-const cambiarEstado = asyncHandler(async (req, res) => {
-  const moto = await motocicletaService.cambiarEstado(req.params.id, req.body.activo);
+// PATCH /api/motocicletas/:id/activo
+const cambiarActivo = asyncHandler(async (req, res) => {
+  const moto = await motocicletaService.cambiarActivo(req.params.id, req.body.activo);
   res.status(200).json({ success: true, data: moto });
 });
 
-module.exports = { crear, listar, obtenerPorId, actualizar, cambiarEstado };
+// PATCH /api/motocicletas/:id/estado
+const cambiarEstadoServicio = asyncHandler(async (req, res) => {
+  const moto = await motocicletaService.cambiarEstadoServicio(req.params.id, req.body.estado);
+  res.status(200).json({ success: true, data: moto });
+});
+
+module.exports = {
+  crear,
+  listar,
+  obtenerPorId,
+  actualizar,
+  cambiarActivo,
+  cambiarEstadoServicio,
+};
