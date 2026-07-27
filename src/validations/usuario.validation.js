@@ -27,8 +27,11 @@ const cambiarEstadoValidation = [
   body('activo').isBoolean().withMessage('El campo activo debe ser true o false'),
 ];
 
+const eliminarValidation = [param('id').isInt().withMessage('El id debe ser numérico')];
+
 module.exports = {
   crearUsuarioValidation,
   actualizarUsuarioValidation,
   cambiarEstadoValidation,
+  eliminarValidation,
 };

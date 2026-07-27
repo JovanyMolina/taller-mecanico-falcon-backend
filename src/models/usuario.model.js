@@ -55,4 +55,26 @@ async function cambiarEstado(id, activo) {
   return buscarPorId(id);
 }
 
-module.exports = { buscarPorEmail, buscarPorId, crear, listar, actualizar, cambiarEstado };
+// Solo id + nombre, sin email ni rol: para selectores (ej. asignar técnico),
+// accesible a cualquier usuario autenticado, no solo admins.
+async function listarTecnicos() {
+  const [rows] = await pool.query(
+    'SELECT id, nombre FROM usuarios WHERE activo = 1 ORDER BY nombre'
+  );
+  return rows;
+}
+
+async function eliminar(id) {
+  await pool.query('DELETE FROM usuarios WHERE id = ?', [id]);
+}
+
+module.exports = {
+  buscarPorEmail,
+  buscarPorId,
+  crear,
+  listar,
+  actualizar,
+  cambiarEstado,
+  listarTecnicos,
+  eliminar,
+};

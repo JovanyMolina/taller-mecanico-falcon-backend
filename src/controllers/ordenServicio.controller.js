@@ -33,7 +33,7 @@ const cambiarEstado = asyncHandler(async (req, res) => {
   const orden = await ordenService.cambiarEstado(
     req.params.id,
     req.body.estado,
-    req.body.fecha_entrega
+    req.body.fecha_entrega_real
   );
   res.status(200).json({ success: true, data: orden });
 });

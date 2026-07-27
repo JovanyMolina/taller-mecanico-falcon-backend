@@ -21,14 +21,34 @@ const obtenerPorId = asyncHandler(async (req, res) => {
 
 // PUT /api/usuarios/:id
 const actualizar = asyncHandler(async (req, res) => {
-  const usuario = await usuarioService.actualizar(req.params.id, req.body);
+  const usuario = await usuarioService.actualizar(req.params.id, req.body, req.usuario.id);
   res.status(200).json({ success: true, data: usuario });
 });
 
 // PATCH /api/usuarios/:id/estado
 const cambiarEstado = asyncHandler(async (req, res) => {
-  const usuario = await usuarioService.cambiarEstado(req.params.id, req.body.activo);
+  const usuario = await usuarioService.cambiarEstado(req.params.id, req.body.activo, req.usuario.id);
   res.status(200).json({ success: true, data: usuario });
 });
 
-module.exports = { crear, listar, obtenerPorId, actualizar, cambiarEstado };
+// DELETE /api/usuarios/:id
+const eliminar = asyncHandler(async (req, res) => {
+  await usuarioService.eliminar(req.params.id, req.usuario.id);
+  res.status(200).json({ success: true, message: 'Usuario eliminado' });
+});
+
+// GET /api/usuarios/tecnicos
+const listarTecnicos = asyncHandler(async (req, res) => {
+  const tecnicos = await usuarioService.listarTecnicos();
+  res.status(200).json({ success: true, data: tecnicos });
+});
+
+module.exports = {
+  crear,
+  listar,
+  obtenerPorId,
+  actualizar,
+  cambiarEstado,
+  eliminar,
+  listarTecnicos,
+};

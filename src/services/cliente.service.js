@@ -5,8 +5,8 @@ async function crear(datos) {
   return clienteModel.crear(datos);
 }
 
-async function listar(busqueda) {
-  return clienteModel.listar(busqueda);
+async function listar(busqueda, estado) {
+  return clienteModel.listar(busqueda, estado);
 }
 
 async function obtenerPorId(id) {

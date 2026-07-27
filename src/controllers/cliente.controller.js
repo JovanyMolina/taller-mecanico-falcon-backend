@@ -9,8 +9,10 @@ const crear = asyncHandler(async (req, res) => {
 
 // GET /api/clientes?q=busqueda
 const listar = asyncHandler(async (req, res) => {
-  const clientes = await clienteService.listar(req.query.q);
-  res.status(200).json({ success: true, data: clientes });
+const clientes = await clienteService.listar(
+  req.query.q,
+  req.query.estado
+);  res.status(200).json({ success: true, data: clientes });
 });
 
 // GET /api/clientes/:id

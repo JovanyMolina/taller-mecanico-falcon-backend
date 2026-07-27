@@ -8,19 +8,41 @@ async function crear({ nombre, telefono, email, direccion }) {
   return buscarPorId(result.insertId);
 }
 
-async function listar(busqueda) {
+async function listar(busqueda, estado) {
+  let sql = `
+    SELECT *
+    FROM clientes
+    WHERE 1 = 1
+  `;
+
+  const params = [];
+
   if (busqueda) {
+    sql += `
+      AND (
+        nombre LIKE ?
+        OR telefono LIKE ?
+        OR email LIKE ?
+      )
+    `;
+
     const like = `%${busqueda}%`;
-    const [rows] = await pool.query(
-      `SELECT * FROM clientes
-       WHERE nombre LIKE ? OR telefono LIKE ? OR email LIKE ?
-       ORDER BY nombre`,
-      [like, like, like]
-    );
-    return rows;
+
+    params.push(like, like, like);
   }
 
-  const [rows] = await pool.query('SELECT * FROM clientes ORDER BY nombre');
+  if (estado === 'Activo') {
+    sql += ` AND activo = 1`;
+  }
+
+  if (estado === 'Inactivo') {
+    sql += ` AND activo = 0`;
+  }
+
+  sql += ` ORDER BY nombre`;
+
+  const [rows] = await pool.query(sql, params);
+
   return rows;
 }
 
