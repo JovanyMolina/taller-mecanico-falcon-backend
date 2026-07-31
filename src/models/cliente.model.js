@@ -59,9 +59,13 @@ async function actualizar(id, { nombre, telefono, email, direccion }) {
   return buscarPorId(id);
 }
 
+async function buscarPorTelefono(telefono) {
+  const [rows] = await pool.query('SELECT id, nombre FROM clientes WHERE telefono = ?', [telefono]);
+  return rows[0] || null;
+}
 async function cambiarEstado(id, activo) {
   await pool.query('UPDATE clientes SET activo = ? WHERE id = ?', [activo, id]);
   return buscarPorId(id);
 }
 
-module.exports = { crear, listar, buscarPorId, actualizar, cambiarEstado };
+module.exports = { crear, listar, buscarPorId, buscarPorTelefono, actualizar, cambiarEstado };

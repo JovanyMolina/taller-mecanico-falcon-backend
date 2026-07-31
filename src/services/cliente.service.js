@@ -1,7 +1,15 @@
 const clienteModel = require('../models/cliente.model');
 const ApiError = require('../utils/ApiError');
 
+async function validarTelefonoDisponible(telefono, idExcluido = null) {
+  const existente = await clienteModel.buscarPorTelefono(telefono);
+  if (existente && existente.id !== Number(idExcluido)) {
+    throw new ApiError(409, `Ese teléfono ya pertenece a ${existente.nombre}`);
+  }
+}
+
 async function crear(datos) {
+  await validarTelefonoDisponible(datos.telefono);
   return clienteModel.crear(datos);
 }
 
@@ -18,7 +26,8 @@ async function obtenerPorId(id) {
 }
 
 async function actualizar(id, datos) {
-  await obtenerPorId(id);
+  await obtenerPorId(id); 
+  await validarTelefonoDisponible(datos.telefono, id);
   return clienteModel.actualizar(id, datos);
 }
 
