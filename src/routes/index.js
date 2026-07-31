@@ -8,6 +8,7 @@ const ordenServicioRoutes = require('./ordenServicio.routes');
 const cotizacionRoutes = require('./cotizacion.routes');
 const citaRoutes = require('./cita.routes');
 const dashboardRoutes = require('./dashboard.routes');
+const configuracionRoutes = require('./configuracion.routes');
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/ordenes', ordenServicioRoutes);
 router.use('/cotizaciones', cotizacionRoutes);
 router.use('/citas', citaRoutes);
 router.use('/dashboard', dashboardRoutes);
+router.use('/configuracion', configuracionRoutes);
 
 module.exports = router;
