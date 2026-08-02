@@ -9,7 +9,10 @@ const crear = asyncHandler(async (req, res) => {
 
 // GET /api/motocicletas?q=busqueda
 const listar = asyncHandler(async (req, res) => {
-  const motos = await motocicletaService.listar(req.query.q);
+  const motos = await motocicletaService.listar({
+    estado: req.query.estado,
+    busqueda: req.query.q,
+  });
   res.status(200).json({ success: true, data: motos });
 });
 

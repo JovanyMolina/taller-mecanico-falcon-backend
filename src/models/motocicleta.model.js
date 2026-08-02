@@ -42,19 +42,27 @@ async function crear({
   return buscarPorId(result.insertId);
 }
 
-async function listar(busqueda) {
-  if (busqueda) {
-    const like = `%${busqueda}%`;
-    const [rows] = await pool.query(
-      `${SELECT_BASE}
-       WHERE m.placa LIKE ? OR c.nombre LIKE ? OR c.telefono LIKE ?
-       ORDER BY m.fecha_recepcion DESC`,
-      [like, like, like]
-    );
-    return rows;
+async function listar({ estado, busqueda } = {}) {
+  const condiciones = [];
+  const params = [];
+
+  if (estado) {
+    condiciones.push('m.estado = ?');
+    params.push(estado);
   }
 
-  const [rows] = await pool.query(`${SELECT_BASE} ORDER BY m.fecha_recepcion DESC`);
+  if (busqueda) {
+    const like = `%${busqueda}%`;
+    condiciones.push('(m.placa LIKE ? OR c.nombre LIKE ? OR c.telefono LIKE ?)');
+    params.push(like, like, like);
+  }
+
+  const where = condiciones.length ? `WHERE ${condiciones.join(' AND ')}` : '';
+
+  const [rows] = await pool.query(
+    `${SELECT_BASE} ${where} ORDER BY m.fecha_recepcion DESC`,
+    params
+  );
   return rows;
 }
 
