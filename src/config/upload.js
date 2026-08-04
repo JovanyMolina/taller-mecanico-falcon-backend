@@ -4,7 +4,6 @@ const fs = require('fs');
 
 const CARPETA_LOGOS = path.join(__dirname, '../../uploads/logos');
 
-
 fs.mkdirSync(CARPETA_LOGOS, { recursive: true });
 
 const storage = multer.diskStorage({
@@ -27,7 +26,7 @@ function filtroArchivo(req, file, cb) {
 const uploadLogo = multer({
   storage,
   fileFilter: filtroArchivo,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2 MB
+  limits: { fileSize: 2 * 1024 * 1024 },
 });
 
 module.exports = { uploadLogo, CARPETA_LOGOS };
