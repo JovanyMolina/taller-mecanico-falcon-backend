@@ -5,10 +5,10 @@ async function obtener() {
   return rows[0] || null;
 }
 
-async function actualizar({ nombre, direccion, telefono, email }) {
+async function actualizar({ nombre, direccion, telefono, email, trabaja_domingos }) {
   await pool.query(
-    'UPDATE configuracion_negocio SET nombre = ?, direccion = ?, telefono = ?, email = ? WHERE id = 1',
-    [nombre, direccion || null, telefono || null, email || null]
+    'UPDATE configuracion_negocio SET nombre = ?, direccion = ?, telefono = ?, email = ?, trabaja_domingos = ? WHERE id = 1',
+    [nombre, direccion || null, telefono || null, email || null, Boolean(trabaja_domingos)]
   );
   return obtener();
 }

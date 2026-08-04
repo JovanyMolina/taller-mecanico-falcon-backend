@@ -22,10 +22,7 @@ async function actualizarLogo(archivo) {
 
   const actualizado = await configuracionModel.actualizarLogo(nuevaUrl);
 
-  // Borra el logo anterior del disco para no dejar archivos huérfanos.
-  // Si falla (ej. ya no existía), no debe tumbar la petición: el logo nuevo
-  // ya se guardó correctamente, que es lo que importa.
-  if (actual.logo_url) {
+    if (actual.logo_url) {
     const nombreAnterior = path.basename(actual.logo_url);
     const rutaAnterior = path.join(CARPETA_LOGOS, nombreAnterior);
     try {

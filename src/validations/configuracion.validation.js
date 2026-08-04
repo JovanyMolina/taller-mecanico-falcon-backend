@@ -8,6 +8,7 @@ const actualizarConfiguracionValidation = [
     .optional({ checkFalsy: true })
     .isEmail()
     .withMessage('El email no es válido'),
+  body('trabaja_domingos').isBoolean().withMessage('trabaja_domingos debe ser true o false'),
 ];
 
 module.exports = { actualizarConfiguracionValidation };

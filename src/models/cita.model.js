@@ -22,7 +22,6 @@ async function crear({ cliente_id, moto_id, fecha, hora, motivo, creado_por }) {
   return buscarPorId(result.insertId);
 }
 
-// Filtro principal: rango de fechas (una semana), no búsqueda de texto.
 async function listar({ desde, hasta, busqueda } = {}) {
   const condiciones = [];
   const params = [];

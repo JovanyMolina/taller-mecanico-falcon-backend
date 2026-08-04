@@ -1,6 +1,7 @@
 const citaModel = require('../models/cita.model');
 const clienteService = require('./cliente.service');
 const motocicletaService = require('./motocicleta.service');
+const configuracionService = require('./configuracion.service');
 const ApiError = require('../utils/ApiError');
 
 const TRANSICIONES_VALIDAS = {
@@ -15,9 +16,20 @@ async function validarMoto(moto_id) {
   await motocicletaService.obtenerPorId(moto_id); // 404 si no existe
 }
 
+async function validarDiaLaboral(fecha) {
+  const esDomingo = new Date(fecha).getUTCDay() === 0;
+  if (!esDomingo) return;
+
+  const config = await configuracionService.obtener();
+  if (!config.trabaja_domingos) {
+    throw new ApiError(400, 'El taller no labora los domingos');
+  }
+}
+
 async function crear(datos, creado_por) {
-  await clienteService.obtenerPorId(datos.cliente_id); // 404 si el cliente no existe
+  await clienteService.obtenerPorId(datos.cliente_id); 
   await validarMoto(datos.moto_id);
+  await validarDiaLaboral(datos.fecha);
 
   return citaModel.crear({ ...datos, creado_por });
 }
@@ -37,6 +49,7 @@ async function obtenerPorId(id) {
 async function actualizar(id, datos) {
   await obtenerPorId(id);
   await validarMoto(datos.moto_id);
+  await validarDiaLaboral(datos.fecha);
 
   return citaModel.actualizar(id, datos);
 }
