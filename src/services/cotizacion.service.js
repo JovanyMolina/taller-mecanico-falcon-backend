@@ -25,8 +25,8 @@ function validarItems(items) {
   }
 }
 
-async function crear({ moto_id, items }, creado_por) {
-  await motocicletaService.obtenerPorId(moto_id); // 404 si la moto no existe
+async function crear({ moto_id, items, observaciones }, creado_por) {
+  await motocicletaService.obtenerPorId(moto_id); 
   validarItems(items);
 
   const { itemsConSubtotal, subtotal, total } = calcularTotales(items);
@@ -35,7 +35,7 @@ async function crear({ moto_id, items }, creado_por) {
   try {
     await conn.beginTransaction();
 
-    const cotizacionId = await cotizacionModel.crear({ moto_id, creado_por }, conn);
+    const cotizacionId = await cotizacionModel.crear({ moto_id, creado_por, observaciones }, conn);
 
     for (const item of itemsConSubtotal) {
       await cotizacionItemModel.crear({ cotizacion_id: cotizacionId, ...item }, conn);
@@ -65,7 +65,7 @@ async function obtenerPorId(id) {
   return cotizacion;
 }
 
-async function actualizar(id, { items }) {
+async function actualizar(id, { items, observaciones }) {
   const cotizacion = await obtenerPorId(id);
 
   if (cotizacion.estado !== 'pendiente') {
@@ -85,6 +85,7 @@ async function actualizar(id, { items }) {
     }
 
     await cotizacionModel.actualizarTotales(id, subtotal, total, conn);
+    await cotizacionModel.actualizarObservaciones(id, observaciones, conn);
 
     await conn.commit();
     return cotizacionModel.buscarPorId(id);
