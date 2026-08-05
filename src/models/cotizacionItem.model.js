@@ -1,11 +1,11 @@
 const pool = require('../config/conexionbd');
 
-async function crear({ cotizacion_id, tipo, concepto, cantidad, precio_unitario, subtotal }, conn = pool) {
+async function crear({ cotizacion_id, tipo, concepto, cantidad, precio_unitario, subtotal, caducacion }, conn = pool) {
   await conn.query(
     `INSERT INTO cotizacion_items
-       (cotizacion_id, tipo, concepto, cantidad, precio_unitario, subtotal)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [cotizacion_id, tipo, concepto, cantidad || 1, precio_unitario, subtotal]
+       (cotizacion_id, tipo, concepto, cantidad, precio_unitario, caducacion, subtotal)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [cotizacion_id, tipo, concepto, cantidad || 1, precio_unitario, caducacion || null, subtotal]
   );
 }
 

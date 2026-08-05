@@ -1,6 +1,6 @@
 const { body, param } = require('express-validator');
 
-const TIPOS_VALIDOS = ['refaccion', 'mano_obra'];
+const TIPOS_VALIDOS = ['refaccion', 'mano_obra', 'refaccion_caducidad'];
 const ESTADOS_VALIDOS = ['aprobada', 'rechazada'];
 
 const itemsValidation = [
@@ -9,16 +9,35 @@ const itemsValidation = [
   body('items.*.concepto').trim().notEmpty().withMessage('El concepto del ítem es obligatorio'),
   body('items.*.cantidad').optional({ checkFalsy: true }).isInt({ min: 1 }).withMessage('La cantidad debe ser mayor a 0'),
   body('items.*.precio_unitario').isFloat({ min: 0 }).withMessage('El precio unitario debe ser un número positivo'),
+  body('items.*.caducacion')
+    .optional({ checkFalsy: true })
+    .isISO8601()
+    .withMessage('La caducación del ítem debe ser una fecha válida (AAAA-MM-DD)'),
+];
+
+const observacionesValidation = [
+  body('observaciones')
+    .optional({ checkFalsy: true })
+    .trim()
+    .isString()
+    .isLength({ max: 1000 })
+    .withMessage('Las observaciones no pueden superar los 1000 caracteres'),
+  body('anticipo')
+    .optional({ checkFalsy: true })
+    .isFloat({ min: 0 })
+    .withMessage('El anticipo debe ser un número positivo'),
 ];
 
 const crearCotizacionValidation = [
   body('moto_id').isInt().withMessage('moto_id es obligatorio y debe ser numérico'),
   ...itemsValidation,
+  ...observacionesValidation,
 ];
 
 const actualizarCotizacionValidation = [
   param('id').isInt().withMessage('El id debe ser numérico'),
   ...itemsValidation,
+  ...observacionesValidation,
 ];
 
 const cambiarEstadoValidation = [

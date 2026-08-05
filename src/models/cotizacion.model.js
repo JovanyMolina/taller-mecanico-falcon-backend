@@ -2,7 +2,7 @@ const pool = require('../config/conexionbd');
 
 const SELECT_BASE = `
   SELECT
-    q.id, q.moto_id, q.creado_por, q.estado, q.subtotal, q.total, q.observaciones, q.created_at,
+    q.id, q.moto_id, q.creado_por, q.estado, q.subtotal, q.total, q.observaciones, q.anticipo, q.created_at,
     m.placa AS moto_placa, m.marca AS moto_marca, m.modelo AS moto_modelo,
     c.nombre AS cliente_nombre, c.telefono AS cliente_telefono,
     u.nombre AS creado_por_nombre
@@ -13,18 +13,18 @@ const SELECT_BASE = `
 `;
 
 
-async function crear({ moto_id, creado_por, observaciones }, conn = pool) {
+async function crear({ moto_id, creado_por, observaciones, anticipo }, conn = pool) {
   const [result] = await conn.query(
-    'INSERT INTO cotizaciones (moto_id, creado_por, observaciones) VALUES (?, ?, ?)',
-    [moto_id, creado_por, observaciones || null]
+    'INSERT INTO cotizaciones (moto_id, creado_por, observaciones, anticipo) VALUES (?, ?, ?, ?)',
+    [moto_id, creado_por, observaciones || null, anticipo ?? null]
   );
   return result.insertId;
 }
 
-async function actualizarObservaciones(id, observaciones, conn = pool) {
+async function actualizarDetalles(id, { observaciones, anticipo }, conn = pool) {
   await conn.query(
-    'UPDATE cotizaciones SET observaciones = ? WHERE id = ?',
-    [observaciones || null, id]
+    'UPDATE cotizaciones SET observaciones = ?, anticipo = ? WHERE id = ?',
+    [observaciones || null, anticipo ?? null, id]
   );
 }
 
@@ -62,7 +62,7 @@ async function buscarPorId(id) {
   if (!cotizacion) return null;
 
   const [items] = await pool.query(
-    'SELECT id, tipo, concepto, cantidad, precio_unitario, subtotal FROM cotizacion_items WHERE cotizacion_id = ?',
+    'SELECT id, tipo, concepto, cantidad, precio_unitario, caducacion, subtotal FROM cotizacion_items WHERE cotizacion_id = ?',
     [id]
   );
   cotizacion.items = items;
@@ -74,4 +74,4 @@ async function cambiarEstado(id, estado) {
   return buscarPorId(id);
 }
 
-module.exports = { crear, actualizarTotales, actualizarObservaciones, listar, buscarPorId, cambiarEstado };
+module.exports = { crear, actualizarTotales, actualizarDetalles, listar, buscarPorId, cambiarEstado };
