@@ -22,6 +22,12 @@ const observacionesValidation = [
     .isString()
     .isLength({ max: 1000 })
     .withMessage('Las observaciones no pueden superar los 1000 caracteres'),
+  body('garantia')
+    .optional({ checkFalsy: true })
+    .trim()
+    .isString()
+    .isLength({ max: 500 })
+    .withMessage('La garantía no puede superar los 500 caracteres'),
   body('anticipo')
     .optional({ checkFalsy: true })
     .isFloat({ min: 0 })
