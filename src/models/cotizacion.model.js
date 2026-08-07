@@ -35,13 +35,18 @@ async function actualizarTotales(id, subtotal, total, conn = pool) {
   );
 }
 
-async function listar({ estado, busqueda } = {}) {
+async function listar({ estado, busqueda, moto_id } = {}) {
   const condiciones = [];
   const params = [];
 
   if (estado) {
     condiciones.push('q.estado = ?');
     params.push(estado);
+  }
+
+  if (moto_id) {
+    condiciones.push('q.moto_id = ?');
+    params.push(moto_id);
   }
 
   if (busqueda) {

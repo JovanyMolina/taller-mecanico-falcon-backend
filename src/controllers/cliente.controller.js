@@ -33,4 +33,10 @@ const cambiarEstado = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: cliente });
 });
 
-module.exports = { crear, listar, obtenerPorId, actualizar, cambiarEstado };
+// GET /api/clientes/:id/historial
+const obtenerHistorial = asyncHandler(async (req, res) => {
+  const historial = await clienteService.obtenerHistorial(req.params.id);
+  res.status(200).json({ success: true, data: historial });
+});
+
+module.exports = { crear, listar, obtenerPorId, actualizar, cambiarEstado, obtenerHistorial };

@@ -10,11 +10,10 @@ const verificarAutenticacion = require('../middlewares/auth.middleware');
 
 const router = Router();
 
-// Todo el módulo requiere estar autenticado. Ambos roles (admin y usuario) tienen acceso:
-// registrar/consultar clientes es parte de la operación diaria del taller.
 router.use(verificarAutenticacion);
 
 router.get('/', controller.listar);
+router.get('/:id/historial', controller.obtenerHistorial);
 router.get('/:id', controller.obtenerPorId);
 router.post('/', crearClienteValidation, validate, controller.crear);
 router.put('/:id', actualizarClienteValidation, validate, controller.actualizar);

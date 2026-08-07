@@ -42,13 +42,18 @@ async function crear({
   return buscarPorId(result.insertId);
 }
 
-async function listar({ estado, busqueda } = {}) {
+async function listar({ estado, busqueda, cliente_id } = {}) {
   const condiciones = [];
   const params = [];
 
   if (estado) {
     condiciones.push('m.estado = ?');
     params.push(estado);
+  }
+
+  if (cliente_id) {
+    condiciones.push('m.cliente_id = ?');
+    params.push(cliente_id);
   }
 
   if (busqueda) {

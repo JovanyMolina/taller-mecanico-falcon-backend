@@ -1,4 +1,8 @@
 const clienteModel = require('../models/cliente.model');
+const motocicletaModel = require('../models/motocicleta.model');
+const cotizacionModel = require('../models/cotizacion.model');
+const ordenModel = require('../models/ordenServicio.model');
+const motoEvidenciaModel = require('../models/motoEvidencia.model');
 const ApiError = require('../utils/ApiError');
 
 async function validarTelefonoDisponible(telefono, idExcluido = null) {
@@ -36,4 +40,22 @@ async function cambiarEstado(id, activo) {
   return clienteModel.cambiarEstado(id, activo);
 }
 
-module.exports = { crear, listar, obtenerPorId, actualizar, cambiarEstado };
+async function obtenerHistorial(id) {
+  const cliente = await obtenerPorId(id);
+  const motos = await motocicletaModel.listar({ cliente_id: id });
+
+  const motosConHistorial = await Promise.all(
+    motos.map(async (moto) => {
+      const [cotizaciones, ordenes, evidencias] = await Promise.all([
+        cotizacionModel.listar({ moto_id: moto.id }),
+        ordenModel.listar({ moto_id: moto.id }),
+        motoEvidenciaModel.listarPorMoto(moto.id),
+      ]);
+      return { ...moto, cotizaciones, ordenes, evidencias };
+    })
+  );
+
+  return { cliente, motos: motosConHistorial };
+}
+
+module.exports = { crear, listar, obtenerPorId, actualizar, cambiarEstado, obtenerHistorial };

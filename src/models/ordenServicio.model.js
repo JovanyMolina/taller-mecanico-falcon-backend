@@ -36,13 +36,18 @@ async function crear({
   return buscarPorId(result.insertId);
 }
 
-async function listar({ estado, busqueda } = {}) {
+async function listar({ estado, busqueda, moto_id } = {}) {
   const condiciones = [];
   const params = [];
 
   if (estado) {
     condiciones.push('o.estado = ?');
     params.push(estado);
+  }
+
+  if (moto_id) {
+    condiciones.push('o.moto_id = ?');
+    params.push(moto_id);
   }
 
   if (busqueda) {
