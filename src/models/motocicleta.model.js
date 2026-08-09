@@ -22,8 +22,8 @@ async function crear({
   kilometraje,
   falla_reportada,
   recibido_por,
-}) {
-  const [result] = await pool.query(
+}, conn = pool) {
+  const [result] = await conn.query(
     `INSERT INTO motos
        (cliente_id, marca, modelo, anio, placa, color, kilometraje, falla_reportada, recibido_por)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -39,7 +39,7 @@ async function crear({
       recibido_por || null,
     ]
   );
-  return buscarPorId(result.insertId);
+  return buscarPorId(result.insertId, conn);
 }
 
 async function listar({ estado, busqueda, cliente_id } = {}) {
@@ -71,13 +71,13 @@ async function listar({ estado, busqueda, cliente_id } = {}) {
   return rows;
 }
 
-async function buscarPorId(id) {
-  const [rows] = await pool.query(`${SELECT_BASE} WHERE m.id = ?`, [id]);
+async function buscarPorId(id, conn = pool) {
+  const [rows] = await conn.query(`${SELECT_BASE} WHERE m.id = ?`, [id]);
   return rows[0] || null;
 }
 
-async function buscarPorPlaca(placa) {
-  const [rows] = await pool.query('SELECT id FROM motos WHERE placa = ?', [placa]);
+async function buscarPorPlaca(placa, conn = pool) {
+  const [rows] = await conn.query('SELECT id FROM motos WHERE placa = ?', [placa]);
   return rows[0] || null;
 }
 
@@ -91,8 +91,8 @@ async function actualizar(id, {
   kilometraje,
   falla_reportada,
   recibido_por,
-}) {
-  await pool.query(
+}, conn = pool) {
+  await conn.query(
     `UPDATE motos
      SET cliente_id = ?, marca = ?, modelo = ?, anio = ?, placa = ?, color = ?,
          kilometraje = ?, falla_reportada = ?, recibido_por = ?
@@ -110,7 +110,7 @@ async function actualizar(id, {
       id,
     ]
   );
-  return buscarPorId(id);
+  return buscarPorId(id, conn);
 }
 
 async function cambiarActivo(id, activo) {
@@ -118,9 +118,9 @@ async function cambiarActivo(id, activo) {
   return buscarPorId(id);
 }
 
-async function cambiarEstadoServicio(id, estado) {
-  await pool.query('UPDATE motos SET estado = ? WHERE id = ?', [estado, id]);
-  return buscarPorId(id);
+async function cambiarEstadoServicio(id, estado, conn = pool) {
+  await conn.query('UPDATE motos SET estado = ? WHERE id = ?', [estado, id]);
+  return buscarPorId(id, conn);
 }
 
 module.exports = {

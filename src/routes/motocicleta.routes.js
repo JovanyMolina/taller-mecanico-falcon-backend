@@ -21,6 +21,7 @@ router.post('/', crearMotocicletaValidation, validate, controller.crear);
 router.put('/:id', actualizarMotocicletaValidation, validate, controller.actualizar);
 router.patch('/:id/activo', cambiarActivoValidation, validate, controller.cambiarActivo);
 router.patch('/:id/estado', cambiarEstadoServicioValidation, validate, controller.cambiarEstadoServicio);
+router.patch('/:id/entregar', controller.entregar);
 
 router.post('/:id/evidencias', uploadEvidencias.array('fotos', 6), evidenciaController.subir);
 router.get('/:id/evidencias', evidenciaController.listar);

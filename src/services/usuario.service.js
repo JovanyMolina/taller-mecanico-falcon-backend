@@ -27,10 +27,8 @@ async function obtenerPorId(id) {
 }
 
 async function actualizar(id, { nombre, email, rol }, idSolicitante) {
-  await obtenerPorId(id); // valida que exista, lanza 404 si no
+  await obtenerPorId(id); 
 
-  // Un admin no puede quitarse su propio rol de admin — se quedaría sin acceso
-  // a este mismo módulo y nadie más podría revertirlo si es el único admin.
   if (Number(id) === Number(idSolicitante) && rol !== 'admin') {
     throw new ApiError(400, 'No puedes quitarte tu propio rol de administrador');
   }
@@ -67,7 +65,6 @@ async function eliminar(id, idSolicitante) {
   try {
     await usuarioModel.eliminar(id);
   } catch (error) {
-    // El usuario tiene cotizaciones creadas (cotizaciones.creado_por es ON DELETE RESTRICT).
     if (error.code === 'ER_ROW_IS_REFERENCED_2' || error.code === 'ER_ROW_IS_REFERENCED') {
       throw new ApiError(
         409,

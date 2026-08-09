@@ -1,4 +1,6 @@
+const pool = require('../config/conexionbd');
 const motocicletaModel = require('../models/motocicleta.model');
+const citaModel = require('../models/cita.model');
 const clienteService = require('./cliente.service');
 const usuarioService = require('./usuario.service');
 const ApiError = require('../utils/ApiError');
@@ -8,7 +10,7 @@ const TRANSICIONES_VALIDAS = {
   en_diagnostico: ['en_reparacion', 'recibida'],
   en_reparacion: ['lista', 'en_diagnostico'],
   lista: ['entregada', 'en_reparacion'],
-  entregada: [],
+  entregada: ['recibida'],
 };
 
 async function validarPlacaDisponible(placa, idExcluido = null) {
@@ -69,6 +71,33 @@ async function cambiarEstadoServicio(id, nuevoEstado) {
 
   return motocicletaModel.cambiarEstadoServicio(id, nuevoEstado);
 }
+async function entregar(id) {
+  const moto = await obtenerPorId(id);
+  if (moto.estado === 'entregada') {
+    throw new ApiError(400, 'Esta moto ya fue entregada');
+  }
+
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    const motoEntregada = await motocicletaModel.cambiarEstadoServicio(id, 'entregada', conn);
+
+    const citas = await citaModel.listar({ moto_id: id });
+    const pendientes = citas.filter((c) => !['completada', 'cancelada'].includes(c.estado));
+    for (const cita of pendientes) {
+      await citaModel.cambiarEstado(cita.id, 'completada', conn);
+    }
+
+    await conn.commit();
+    return motoEntregada;
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
+  }
+}
 
 module.exports = {
   crear,
@@ -77,4 +106,5 @@ module.exports = {
   actualizar,
   cambiarActivo,
   cambiarEstadoServicio,
+  entregar,
 };

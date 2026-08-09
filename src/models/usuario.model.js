@@ -55,8 +55,6 @@ async function cambiarEstado(id, activo) {
   return buscarPorId(id);
 }
 
-// Solo id + nombre, sin email ni rol: para selectores (ej. asignar técnico),
-// accesible a cualquier usuario autenticado, no solo admins.
 async function listarTecnicos() {
   const [rows] = await pool.query(
     'SELECT id, nombre FROM usuarios WHERE activo = 1 ORDER BY nombre'

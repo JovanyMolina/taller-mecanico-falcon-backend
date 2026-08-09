@@ -12,11 +12,7 @@ const verificarRol = require('../middlewares/roles.middleware');
 
 const router = Router();
 
-// Autenticado, SIN requisito de admin: lista mínima (id, nombre) para selectores,
-// ej. asignar técnico a una orden. Va antes del router.use() de abajo para no
-// heredar la restricción de admin que aplica al resto del módulo.
 router.get('/tecnicos', verificarAutenticacion, controller.listarTecnicos);
-// Todo lo demás requiere estar autenticado Y tener rol admin.
 router.use(verificarAutenticacion, verificarRol('admin'));
 
 router.get('/', controller.listar);

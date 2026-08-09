@@ -7,11 +7,12 @@ const crear = asyncHandler(async (req, res) => {
   res.status(201).json({ success: true, data: moto });
 });
 
-// GET /api/motocicletas?q=busqueda
+// GET /api/motocicletas?q=busqueda&cliente_id=1
 const listar = asyncHandler(async (req, res) => {
   const motos = await motocicletaService.listar({
     estado: req.query.estado,
     busqueda: req.query.q,
+    cliente_id: req.query.cliente_id,
   });
   res.status(200).json({ success: true, data: motos });
 });
@@ -40,6 +41,12 @@ const cambiarEstadoServicio = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: moto });
 });
 
+// PATCH /api/motocicletas/:id/entregar
+const entregar = asyncHandler(async (req, res) => {
+  const moto = await motocicletaService.entregar(req.params.id);
+  res.status(200).json({ success: true, data: moto });
+});
+
 module.exports = {
   crear,
   listar,
@@ -47,4 +54,5 @@ module.exports = {
   actualizar,
   cambiarActivo,
   cambiarEstadoServicio,
+  entregar,
 };

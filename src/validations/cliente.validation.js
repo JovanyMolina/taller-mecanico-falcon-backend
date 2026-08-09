@@ -6,8 +6,8 @@ const crearClienteValidation = [
     .trim()
     .notEmpty()
     .withMessage('El teléfono es obligatorio')
-    .isLength({ min: 10 })
-    .withMessage('El teléfono debe tener al menos 10 dígitos'),
+    .matches(/^\d{10}$/)
+    .withMessage('El teléfono debe tener exactamente 10 dígitos'),
   body('email')
     .optional({ checkFalsy: true })
     .isEmail()

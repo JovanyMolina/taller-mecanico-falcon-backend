@@ -1,11 +1,11 @@
 const pool = require('../config/conexionbd');
 
-async function crear({ nombre, telefono, email, direccion }) {
-  const [result] = await pool.query(
+async function crear({ nombre, telefono, email, direccion }, conn = pool) {
+  const [result] = await conn.query(
     'INSERT INTO clientes (nombre, telefono, email, direccion) VALUES (?, ?, ?, ?)',
     [nombre, telefono, email || null, direccion || null]
   );
-  return buscarPorId(result.insertId);
+  return buscarPorId(result.insertId, conn);
 }
 
 async function listar(busqueda, estado) {
@@ -46,8 +46,8 @@ async function listar(busqueda, estado) {
   return rows;
 }
 
-async function buscarPorId(id) {
-  const [rows] = await pool.query('SELECT * FROM clientes WHERE id = ?', [id]);
+async function buscarPorId(id, conn = pool) {
+  const [rows] = await conn.query('SELECT * FROM clientes WHERE id = ?', [id]);
   return rows[0] || null;
 }
 
@@ -59,8 +59,8 @@ async function actualizar(id, { nombre, telefono, email, direccion }) {
   return buscarPorId(id);
 }
 
-async function buscarPorTelefono(telefono) {
-  const [rows] = await pool.query('SELECT id, nombre FROM clientes WHERE telefono = ?', [telefono]);
+async function buscarPorTelefono(telefono, conn = pool) {
+  const [rows] = await conn.query('SELECT id, nombre FROM clientes WHERE telefono = ?', [telefono]);
   return rows[0] || null;
 }
 async function cambiarEstado(id, activo) {

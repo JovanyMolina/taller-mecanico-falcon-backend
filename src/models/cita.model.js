@@ -13,22 +13,27 @@ const SELECT_BASE = `
   JOIN usuarios u ON u.id = c.creado_por
 `;
 
-async function crear({ cliente_id, moto_id, fecha, hora, motivo, creado_por }) {
-  const [result] = await pool.query(
+async function crear({ cliente_id, moto_id, fecha, hora, motivo, creado_por }, conn = pool) {
+  const [result] = await conn.query(
     `INSERT INTO citas (cliente_id, moto_id, fecha, hora, motivo, creado_por)
      VALUES (?, ?, ?, ?, ?, ?)`,
     [cliente_id, moto_id || null, fecha, hora || null, motivo || null, creado_por]
   );
-  return buscarPorId(result.insertId);
+  return buscarPorId(result.insertId, conn);
 }
 
-async function listar({ desde, hasta, busqueda } = {}) {
+async function listar({ desde, hasta, busqueda, moto_id } = {}) {
   const condiciones = [];
   const params = [];
 
   if (desde && hasta) {
     condiciones.push('c.fecha BETWEEN ? AND ?');
     params.push(desde, hasta);
+  }
+
+  if (moto_id) {
+    condiciones.push('c.moto_id = ?');
+    params.push(moto_id);
   }
 
   if (busqueda) {
@@ -46,8 +51,8 @@ async function listar({ desde, hasta, busqueda } = {}) {
   return rows;
 }
 
-async function buscarPorId(id) {
-  const [rows] = await pool.query(`${SELECT_BASE} WHERE c.id = ?`, [id]);
+async function buscarPorId(id, conn = pool) {
+  const [rows] = await conn.query(`${SELECT_BASE} WHERE c.id = ?`, [id]);
   return rows[0] || null;
 }
 
@@ -59,9 +64,9 @@ async function actualizar(id, { moto_id, fecha, hora, motivo }) {
   return buscarPorId(id);
 }
 
-async function cambiarEstado(id, estado) {
-  await pool.query('UPDATE citas SET estado = ? WHERE id = ?', [estado, id]);
-  return buscarPorId(id);
+async function cambiarEstado(id, estado, conn = pool) {
+  await conn.query('UPDATE citas SET estado = ? WHERE id = ?', [estado, id]);
+  return buscarPorId(id, conn);
 }
 
 module.exports = { crear, listar, buscarPorId, actualizar, cambiarEstado };
