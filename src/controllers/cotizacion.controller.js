@@ -30,7 +30,7 @@ const actualizar = asyncHandler(async (req, res) => {
 
 // PATCH /api/cotizaciones/:id/estado
 const cambiarEstado = asyncHandler(async (req, res) => {
-  const cotizacion = await cotizacionService.cambiarEstado(req.params.id, req.body.estado);
+  const cotizacion = await cotizacionService.cambiarEstado(req.params.id, req.body.estado, req.body.motivo_rechazo);
   res.status(200).json({ success: true, data: cotizacion });
 });
 

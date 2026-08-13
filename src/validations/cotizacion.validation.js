@@ -49,6 +49,7 @@ const actualizarCotizacionValidation = [
 const cambiarEstadoValidation = [
   param('id').isInt().withMessage('El id debe ser numérico'),
   body('estado').isIn(ESTADOS_VALIDOS).withMessage(`El estado debe ser: ${ESTADOS_VALIDOS.join(', ')}`),
+  body('motivo_rechazo').optional({ checkFalsy: true }).trim().isString().isLength({ max: 500 }),
 ];
 
 module.exports = {

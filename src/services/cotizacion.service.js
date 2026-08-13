@@ -97,14 +97,15 @@ async function actualizar(id, { items, observaciones, garantia, anticipo }) {
   }
 }
 
-async function cambiarEstado(id, nuevoEstado) {
+async function cambiarEstado(id, nuevoEstado, motivoRechazo) {
   const cotizacion = await obtenerPorId(id);
-
   if (cotizacion.estado !== 'pendiente') {
-    throw new ApiError(400, `No se puede cambiar el estado de una cotización ya "${cotizacion.estado}"`);
+    throw new ApiError(400, 'Esta cotización ya fue resuelta');
   }
-
-  return cotizacionModel.cambiarEstado(id, nuevoEstado);
+  if (nuevoEstado === 'rechazada' && !motivoRechazo?.trim()) {
+    throw new ApiError(400, 'Indica el motivo del rechazo');
+  }
+  return cotizacionModel.cambiarEstado(id, nuevoEstado, motivoRechazo);
 }
 
 module.exports = { crear, listar, obtenerPorId, actualizar, cambiarEstado };

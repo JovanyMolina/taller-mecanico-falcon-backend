@@ -2,7 +2,7 @@ const pool = require('../config/conexionbd');
 
 const SELECT_BASE = `
   SELECT
-    q.id, q.moto_id, q.creado_por, q.estado, q.subtotal, q.total, q.observaciones, q.garantia, q.anticipo, q.created_at,
+    q.id, q.moto_id, q.creado_por, q.estado, q.subtotal, q.total, q.observaciones, q.garantia, q.motivo_rechazo, q.anticipo, q.created_at,
     m.placa AS moto_placa, m.marca AS moto_marca, m.modelo AS moto_modelo,
     c.nombre AS cliente_nombre, c.telefono AS cliente_telefono,
     u.nombre AS creado_por_nombre
@@ -74,8 +74,8 @@ async function buscarPorId(id) {
   return cotizacion;
 }
 
-async function cambiarEstado(id, estado) {
-  await pool.query('UPDATE cotizaciones SET estado = ? WHERE id = ?', [estado, id]);
+async function cambiarEstado(id, estado, motivo_rechazo) {
+  await pool.query('UPDATE cotizaciones SET estado = ?, motivo_rechazo = ? WHERE id = ?', [estado, motivo_rechazo || null, id]);
   return buscarPorId(id);
 }
 
