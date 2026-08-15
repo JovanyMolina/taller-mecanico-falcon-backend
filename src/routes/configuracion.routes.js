@@ -11,6 +11,7 @@ const router = Router();
 router.use(verificarAutenticacion);
 
 router.get('/', controller.obtener);
+router.get('/red', controller.obtenerRed);
 
 router.put('/', verificarRol('admin'), actualizarConfiguracionValidation, validate, controller.actualizar);
 router.post('/logo', verificarRol('admin'), uploadLogo.single('logo'), controller.actualizarLogo);

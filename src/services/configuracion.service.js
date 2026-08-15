@@ -1,8 +1,37 @@
 const path = require('path');
 const fs = require('fs/promises');
+const os = require('os');
 const configuracionModel = require('../models/configuracion.model');
 const { CARPETA_LOGOS } = require('../config/upload');
 const ApiError = require('../utils/ApiError');
+
+const PUERTO_FRONTEND = 3000;
+
+function obtenerIpLocal() {
+  const interfaces = os.networkInterfaces();
+  const prefijosVirtuales = ['vethernet', 'virtualbox', 'vmware', 'wsl', 'loopback'];
+
+  for (const nombre of Object.keys(interfaces)) {
+    if (prefijosVirtuales.some((p) => nombre.toLowerCase().includes(p))) continue;
+
+    for (const dir of interfaces[nombre] || []) {
+      if (dir.family === 'IPv4' && !dir.internal) {
+        return dir.address;
+      }
+    }
+  }
+  return null;
+}
+
+function obtenerInfoRed() {
+  const ip = obtenerIpLocal();
+  return {
+    ip,
+    puerto: PUERTO_FRONTEND,
+    url: ip ? `http://${ip}:${PUERTO_FRONTEND}` : null,
+    disponible: Boolean(ip),
+  };
+}
 
 async function obtener() {
   const config = await configuracionModel.obtener();
@@ -35,4 +64,4 @@ async function actualizarLogo(archivo) {
   return actualizado;
 }
 
-module.exports = { obtener, actualizar, actualizarLogo };
+module.exports = { obtener, actualizar, actualizarLogo, obtenerInfoRed };

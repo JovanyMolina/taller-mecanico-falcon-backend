@@ -23,4 +23,10 @@ const actualizarLogo = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: config });
 });
 
-module.exports = { obtener, actualizar, actualizarLogo };
+// GET /api/configuracion/red
+const obtenerRed = asyncHandler(async (req, res) => {
+  const info = configuracionService.obtenerInfoRed();
+  res.status(200).json({ success: true, data: info });
+});
+
+module.exports = { obtener, actualizar, actualizarLogo, obtenerRed };
